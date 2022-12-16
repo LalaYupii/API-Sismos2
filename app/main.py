@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends
 from .models import Sismos, Tsunamis, Volcanes, Pais
 from .database import engine, SessionLocal, Base
 from sqlalchemy.orm import Session
-import Funciones
+from Funciones import *
 from typing import Union
 
 
@@ -25,7 +25,7 @@ def inicio(db: Session = Depends(get_db)):
 
 @app.get('/sismos/all',tags=['Sismos'], description='Petición para obtener todos los registros de sismos.')
 def sismos_todos(db: Session = Depends(get_db)):
-    sismos_todos = Funciones.obtener_sismos(db)
+    sismos_todos = obtener_sismos(db)
     return sismos_todos
 
 # Obtener los registros de sismos filtrando por características.
@@ -34,7 +34,7 @@ def sismos_filtrados(max_depth: Union[float, None] = 800, min_depth: Union[float
          min_lat: Union[float, None] = -90, max_lat: Union[float, None] = 90, min_long: Union[float, None] = -180, max_long:Union[float, None] = 180,
          min_anio: Union[float, None] = 2000, max_anio:Union[float, None] = 2022, pais : Union[str, None] = 'Japón',
          db: Session = Depends(get_db)):
-    pais_valor = Funciones.pais(pais)
+    pais_valor = pais(pais)
     sismos = db.query(Sismos).filter(Sismos.depth >= min_depth).filter(Sismos.depth <= max_depth).\
             filter(Sismos.mag <= max_mag).filter(Sismos.mag >= min_mag).\
                 filter(Sismos.lat <= max_lat).filter(Sismos.lat >= min_lat).\
@@ -47,7 +47,7 @@ def sismos_filtrados(max_depth: Union[float, None] = 800, min_depth: Union[float
 # Sismo mas fuerte para el año deseado en el pais de interes.
 @app.get('/sismos/evento_maximo', tags=['Sismos'], description='Petición que retorna el sismo mas fuerte para el año deseado en el pais de interes.')
 def sismo_maximo(pais_i : str,anio: int, db: Session = Depends(get_db)):
-    pais_valor = Funciones.pais(pais_i)
+    pais_valor = pais(pais_i)
     max_sismo = db.query(Sismos).select_from(Sismos).join(Pais, Sismos.idpais == Pais.idpais,).\
         filter(Pais.idpais == pais_valor).filter(Sismos.year == anio).order_by(Sismos.mag.desc()).limit(1).all()
     return max_sismo
@@ -78,7 +78,7 @@ def tsunamis_filtrados(altura_olas_max: Union[float, None] = 100, altura_olas_mi
 # Top 5 Tsunami mas fuertes para el año deseado en el pais de interes
 @app.get('/Tsunamis/eventos_maximos', tags=['Tsunamis'], description='Petición para obtener los 5 tsunamis con mayor elevación de marea filtrados según pais y año.')
 def tsunamis_maximos(pais_i: str, anio: int, db: Session = Depends(get_db)):
-    pais_valor = Funciones.pais(pais_i)
+    pais_valor = pais(pais_i)
     tsunami_maximo = db.query(Tsunamis).select_from(Tsunamis).join(Pais, Tsunamis.idpais == Pais.idpais).\
         filter(Tsunamis.year == anio).filter(Pais.idpais == pais_valor).order_by(Tsunamis.altura_oleaje.desc()).limit(5).all()
     return tsunami_maximo
@@ -94,7 +94,7 @@ def volcanes_todos(db: Session = Depends(get_db)):
 # Obtener todos los registros de volcanes segun el pais.
 @app.get('/volcanes/', tags=['Volcanes'], description='Petición para obterner los volcanes filtrados por pais.')
 def volcanes_filtrados(pais_i: str,db: Session = Depends(get_db)):
-    pais_valor = Funciones.pais(pais_i)
+    pais_valor = pais(pais_i)
     volcanes_filtrados = db.query(Volcanes).select_from(Volcanes).join(Pais, Volcanes.idpais == Pais.idpais).\
         filter(Pais.idpais == pais_valor).all()
     return volcanes_filtrados
