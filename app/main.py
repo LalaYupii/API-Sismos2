@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends
 from .models import Sismos, Tsunamis, Volcanes, Pais
 from .database import engine, SessionLocal, Base
 from sqlalchemy.orm import Session
-import .Funciones
+import Funciones
 from typing import Union
 
 
