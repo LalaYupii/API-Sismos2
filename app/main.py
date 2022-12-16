@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends
-from models import Base, Sismos, Tsunamis, Volcanes, Pais
-from database import engine, SessionLocal
+from models.py import Base, Sismos, Tsunamis, Volcanes, Pais
+from database.py import engine, SessionLocal
 from sqlalchemy.orm import Session
-import Funciones
+import Funciones.py
 from typing import Union
 
 
