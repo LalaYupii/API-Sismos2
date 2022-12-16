@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func, distinct, select, literal, or_, and_, desc
-from models import Sismos
+from .models import Sismos
 
 '''
 Funciones:
